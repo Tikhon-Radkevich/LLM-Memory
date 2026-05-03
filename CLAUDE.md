@@ -18,6 +18,12 @@ git commit -m "short description"
 git push origin main
 ```
 
-## Context
+## Workflow
 
-This project runs on Kaggle GPU via GitHub sync. Code is edited locally with AI tools (Claude Code, Copilot) and synced to Kaggle kernels through GitHub. Fast commit/push cycle is critical.
+Code is written and edited **locally** using AI tools (Claude Code, GitHub Copilot) with the full benefit of file-based project structure, IDE features, and version control. Execution happens on **Kaggle's Jupyter server** to leverage free GPU resources.
+
+The sync mechanism is GitHub: local changes are pushed to this repo, and the Kaggle kernel pulls from GitHub before each run. This means every push is immediately available for the next Kaggle session.
+
+- `llm-memory.ipynb` is the Kaggle-side notebook — it lives on Kaggle and is not tracked here
+- All other `.py` files, configs, and scripts are the local source of truth
+- The remote is `git@github-kaggle:Tikhon-Radkevich/LLM-Memory.git` (uses a dedicated SSH key for Kaggle)
