@@ -25,11 +25,11 @@ class MemoryMPNetConfig(MPNetConfig):
 
 
 class MemoryMPNetSelfAttention(MPNetSelfAttention):
-    def __init__(self, config):
+    def __init__(self, config: MemoryMPNetConfig):
         super().__init__(config)
         self.memory_adapter = MemoryAdapter(
             config.hidden_size,
-            rank=getattr(config, "adapter_rank", 64),
+            rank=config.adapter_rank,
         )
 
     def forward(
@@ -96,7 +96,7 @@ class MemoryMPNetSelfAttention(MPNetSelfAttention):
 
 
 class MemoryMPNetAttention(MPNetAttention):
-    def __init__(self, config):
+    def __init__(self, config: MemoryMPNetConfig):
         super().__init__(config)
         self.attn = MemoryMPNetSelfAttention(config)
 
