@@ -42,13 +42,11 @@ class MemoryMPNetSelfAttention(MPNetSelfAttention):
     ):
         memory = kwargs.get("memory")  # [mem_size, H] or [B, mem_size, H]
 
-        seq_len = hidden_states.size(1)
-
         if memory is not None:
             if memory.dim() == 2:
                 memory = memory.unsqueeze(0).expand(hidden_states.size(0), -1, -1)
             mem_size = memory.size(1)
-            combined = torch.cat([hidden_states, memory], dim=1)  # [B, seq+mem, H]
+            combined = torch.cat([memory, hidden_states], dim=1)  # [B, mem+seq, H]
         else:
             mem_size = 0
             combined = hidden_states
@@ -83,10 +81,10 @@ class MemoryMPNetSelfAttention(MPNetSelfAttention):
 
         o = self.o(c)
 
-        input_output = o[:, :seq_len, :]  # [B, seq_len, H] — returned as normal output
+        input_output = o[:, mem_size:, :]  # [B, seq_len, H] — returned as normal output
 
         if mem_size > 0:
-            memory_output = o[:, seq_len:, :]           # [B, mem_size, H]
+            memory_output = o[:, :mem_size, :]          # [B, mem_size, H]
             self._updated_memory = self.memory_adapter(memory_output)
         else:
             self._updated_memory = None
