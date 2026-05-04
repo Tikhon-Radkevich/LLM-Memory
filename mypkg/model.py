@@ -62,13 +62,13 @@ class MemoryMPNetSelfAttention(MPNetSelfAttention):
         attention_scores = attention_scores / math.sqrt(self.attention_head_size)
 
         if attention_mask is not None and mem_size > 0:
-            # Extend mask's K-dimension with zeros so memory keys are always attended to
+            # Memory tokens are on the left in combined, so prepend zeros for their key columns
             mem_key_mask = torch.zeros(
                 attention_mask.size(0), 1, 1, mem_size,
                 dtype=attention_mask.dtype,
                 device=attention_mask.device,
             )
-            attention_scores = attention_scores + torch.cat([attention_mask, mem_key_mask], dim=-1)
+            attention_scores = attention_scores + torch.cat([mem_key_mask, attention_mask], dim=-1)
         elif attention_mask is not None:
             attention_scores = attention_scores + attention_mask
 
